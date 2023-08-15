@@ -1,0 +1,53 @@
+{
+    "misc": {
+        "interval_ms": 1000,
+        "verbose": true
+    },
+    "sensors": {
+        "Sensor_1": {
+            "id": "Sensor_1",
+            "lat": 10,
+            "lng": 10,
+            "unit": "C",
+            "type": "temperature",
+            "desc": "Main Entrance",
+            "anomaly": "false"
+        },
+        "Sensor_2": {
+            "id": "Sensor_2",
+            "lat": 90,
+            "lng": 90,
+            "unit": "C",
+            "type": "temperature",
+            "desc": "Kitchen",
+            "anomaly": "true"
+        },
+        "Sensor_3": {
+            "id": "Sensor_3",
+            "lat": 90,
+            "lng": 10,
+            "unit": "C",
+            "type": "temperature",
+            "desc": "Deposit",
+            "anomaly": "true"
+        },
+        "Sensor_4": {
+            "id": "Sensor_4",
+            "lat": 10,
+            "lng": 90,
+            "unit": "C",
+            "type": "temperature",
+            "desc": "Assemlby Floor",
+            "anomaly": "true"
+        },
+        "Sensor_5": {
+            "id": "Sensor_5",
+            "lat": 50,
+            "lng": 50,
+            "unit": "C",
+            "type": "temperature",
+            "desc": "Offices",
+            "anomaly": "true"
+        }
+    }
+}
