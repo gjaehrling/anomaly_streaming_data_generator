@@ -38,18 +38,17 @@ def generate_fake_data(**kwargs):
     """
     generate fake data for the sensors for all sensors in the config file
 
-    :param kwargs:
-    :return:
+    :param **kwargs:
+    :return: sensors dict with fake data
     """
 
     for sensor in sensors.keys():
         # generate data for each sensor:
-
         if sensors[sensor]["anomaly"] == "false":
             logging.debug("anomaly for sensor {} is false setting contamination to zero".format(sensor))
             contamination = 0.00
         else:
-            logging.debug("anomaly for sensor {} is true setting contamination to 0.05".format(sensor))
+            logging.debug("anomaly for sensor {} is true setting contamination to {}".format(sensor, kwargs.get("contamination", 1)))
             contamination = kwargs.get("contamination", 1)
 
         # generate fake data with anomalies using pyod:
@@ -162,8 +161,8 @@ if __name__ == '__main__':
             # ToDo: call the fuction with kwargs
             topic = "iot.sensor.anomaly_data"
 
-            data = generate_fake_data(number=100, sensors=sensors, contamination=0.1, n_features=1, train_only=True, random_state=1)
-            send_messages(number=5, data=data)
+            data = generate_fake_data(number=1000, sensors=sensors, contamination=0.1, n_features=1, train_only=True, random_state=1)
+            send_messages(number=1000, data=data)
 
     except IOError as error:
         logging.error("Error opening config file {} {}".format(config_path, error))

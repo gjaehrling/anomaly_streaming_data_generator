@@ -9,7 +9,6 @@ Maintainer Gerd Jährling mail@gerd-jaehrling.de
 
 # general imports:
 import sys
-import os
 from uuid import uuid4
 
 # kafka import:
