@@ -1,0 +1,2 @@
+# connection string for snowflake in superset:
+snowflake://gjaehrling:XXXXXXXXXX@bi92755.eu-central-1/WEB_LOGS

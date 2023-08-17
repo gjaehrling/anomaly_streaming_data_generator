@@ -1,0 +1,75 @@
+{
+  "schemaName": "user",
+  "dimensionFieldSpecs": [
+    {
+      "name": "id",
+      "dataType": "INT"
+    },
+    {
+      "name": "name",
+      "dataType": "STRING"
+    },
+    {
+      "name": "sex",
+      "dataType": "STRING"
+    },
+    {
+      "name": "address",
+      "dataType": "STRING"
+    },
+    {
+      "name": "city",
+      "dataType": "STRING"
+    },
+    {
+      "name": "zip",
+      "dataType": "STRING"
+    },
+    {
+      "name": "country",
+      "dataType": "STRING"
+    },
+    {
+      "name": "phone",
+      "dataType": "STRING"
+    },
+    {
+      "name": "email",
+      "dataType": "STRING"
+    },
+    {
+      "name": "image",
+      "dataType": "STRING"
+    },
+    {
+      "name": "date_of_birth",
+      "dataType": "STRING"
+    },
+    {
+      "name": "profession",
+      "dataType": "STRING"
+    },
+    {
+      "name": "created_at",
+      "dataType": "STRING"
+    },
+    {
+      "name": "updated_at",
+      "dataType": "STRING",
+      "isNullable": true
+    }
+  ],
+    "dateTimeFieldSpecs": [
+    {
+      "name": "sourceTime",
+      "dataType": "LONG",
+      "format": "1:MILLISECONDS:EPOCH",
+      "granularity": "1:MILLISECONDS"
+    }
+  ],
+    "primaryKeyColumns": ["id"],
+    "segmentsConfig": {
+      "retentionTimeUnit": "DAYS",
+      "retentionTimeValue": "30"
+  }
+}

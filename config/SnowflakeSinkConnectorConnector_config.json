@@ -1,0 +1,21 @@
+{
+  "name": "SnowflakeSinkConnectorClickstream",
+  "config": {
+    "value.converter.schema.registry.url": "http://schema-registry:8081",
+    "connector.class": "com.snowflake.kafka.connector.SnowflakeSinkConnector",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "io.confluent.connect.avro.AvroConverter",
+    "topics": "clickstream",
+    "snowflake.url.name": "https://bi92755.eu-central-1.snowflakecomputing.com:443",
+    "snowflake.user.name": "CONFLUENT",
+    "snowflake.private.key": "MIIFHzBJBgkqhkiG9w0BBQ0wPDAbBgkqhkiG9w0BBQwwDgQIfjMo9JCUXgkCAggAMB0GCWCGSAFlAwQBKgQQu55lwNXGBvA9lh++MckqNwSCBNAnijktZSHaDWlcz90kUXhCn32VHF+OFZ9MampQinvPwRFOQ9faFMoorufu9xj4nJTAqddv+sLGa0s8cSQzlNlxR/K3dKd+AcMkeWecNBPEVtK3Lqp6ca5lP5a7okPzeqBsMY+Rr+nk6aBNMBxqRUvYpHRcZHRtjjxOean4lxIAV1LBy3Pm3rLIDThNZh1AbrXxgsD2NXHXL+QPPTVMPpj55JmFr3tBIP8me6V+dxj81d539xWH16LWGpBpRJrbXsG+xx6K5nhw2X64obQZ7evq9Ybp6faaCy+9RHgwSElxbfLhQmrZ2VcXcykKbd07qQk1U0PT0quvH69GiOdk+hzQN73PH6/iNEinDJ3YD/YGcDEuze2MvRckUAG5TI5p5lcDMlS6d+pNxL8+GYn+f9n+fG6i0SRaywH5im9595Xp1wo8RrcGketedneX0damP/6bh/mHvoM0OuuGfGikZCP4RqATYlL6DEZBvzraGlR44AHCe0xWNL93mfquouDV4LMg1JfSsdWV7qDePPEMBi8vBEI9Fl+M+XqKmO0hJdHqZIm1poC6Oj8IPsZkhEuLOvFI8cPua02rweKWatmW7bWOuB45EZu1tMKIPMQV8Ak+E5UtqhDOhTh/dgUe9pWaMBeZjx4eNUbWtIxHClsyKvnsv8k8i3Jtl8h+18PM+fFB1EqZzBfLdV2zV/FBPzGlct6COKZHWETR9X80EJa1RCrkzssPIYLYh78oVcgrS47cAwXEMhURF7QpOwGpgAjU8Ly+TGHkF4yzMnk3KZZyT69x33RaZZNoOPgAL8Vgg2TBxCEwvKN7S66vOaLOxRPW0r3cIa3MDaYNQBzvikePYuk/3QNmflWIuWO5uVvCB0PGf485xntOBcUtHQxwByHIFhDRAz+LywjItNhf411euqL/CHVqrhMhsD8OIATK7IZmOOLUOI3syBKiH0nOsdxv8LUNjf6GJLjJsdAn51lUBrWaakBFPFMSUt1a2Pi29BvzMgbAInLRoznHnpv1fFq+HecF14sUeIJnQzQ2NjT8VKDvP8WpGihJID1zq36GyrT2WE1vgzSczyHXVevFGnB4SZNLab01CM3uLiXiqBHSele91+CCDJxQRlmY5zxYj0L5uIr4xoG8KAFLELdXat3awWrsS2CYFcXhZgrzx05ljpKatpyxYzQ3M+9E/CkX2JnQ1GCcdt19oYRmyKO99ucx8zaPYShtFSTRsabr28oIs8oiFobPwPoZPBkHFBUMs9DCEpD4LLv2zJpX2dqdrJdvscgrL3XK7ukHUyKRY3mw5dfpOWL8uecRWMacnBPYiIJ3dXAqPER1h5K7/Kcgt9nsyz3W78xqlT4tY0gZrP4lXF1ipM6U8DqEev0K79x7cBDyameM/ZvNfRByTNP7ssTWNJUSKXdSbmbt4xHLtq0onjPTEHiVns1aV+0NanmGDNHLwVehA7k4GLJlTSxSfduMLRM5LznB3mQSUGCMve3ca/PgqKs1j69uSjD4jhcH5dJXYDF5WWHl+9wvK2h8gKroUuIAu44uhFLHGVRKGnXk70lyzQGelj9WnTYr2SCk38glFqfezEC2g7JQ78pijxgH6mjuyNMoaIUWzJLXfokeY3YbLQ8FRIJ2CTaTJt8kMarH1Q==",
+    "snowflake.private.key.passphrase": "gjd30667",
+    "snowflake.database.name": "WEB_LOGS",
+    "snowflake.schema.name": "WEB_LOGS_SCHEMA",
+    "snowflake.role.name": "confluent_connector_role",
+    "snowflake.topic2table.map": "clickstream:clickstream",
+    "buffer.count.records": "10000",
+    "buffer.size.bytes": "5000000",
+    "buffer.flush.time": "60"
+  }
+}
