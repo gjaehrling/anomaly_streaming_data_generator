@@ -5,7 +5,7 @@ Generate random IoT example data with anomalies
 
 Maintainer Gerd Jährling mail@gerd-jaehrling.de
 """
-
+import argparse
 # general imports
 import sys
 import json
@@ -49,11 +49,11 @@ def generate_fake_data(**kwargs):
             contamination = 0.00
         else:
             logging.debug("anomaly for sensor {} is true setting contamination to {}".format(sensor, kwargs.get("contamination", 1)))
-            contamination = kwargs.get("contamination", 1)
+            contamination = float(kwargs.get("contamination", 1))
 
         # generate fake data with anomalies using pyod:
         try:
-            X, y = generate_data(n_train=kwargs.get("number"), contamination=contamination, n_features=1, train_only=True, random_state=1)
+            X, y = generate_data(n_train=int(kwargs.get("number")), contamination=contamination, n_features=1, train_only=True, random_state=1)
         except Exception as e:
             logging.error("cannot generate data for sensor {} {}".format(sensor, e))
             continue
@@ -86,11 +86,16 @@ def send_messages(**kwargs):
         logging.error("error in generating data {}".format(e))
 
     # initialise the kafka producer:
-    connector = PythonKafkaConnector.PythonKafkaConnector(topic=topic)
+    connector = PythonKafkaConnector.PythonKafkaConnector(topic=kwargs.get("topic"),
+                                                          num_messages=kwargs.get("num_messages"),
+                                                          bootstrap_server=kwargs.get("bootstrap_server"),
+                                                          bootstrap_server_port=kwargs.get("bootstrap_server_port"),
+                                                          schema_registry_url=kwargs.get("schema_registry_url"))
+
     string_serializer = StringSerializer('utf_8')
 
     # send the data to the kafka broker:
-    for i in range(num_messages):
+    for i in range(int(num_messages)):
         for d in generated_data.keys():
             delay = random.uniform(0, 2)
             #print("key: " + d, " values: " + str(generated_data[d]), " single value: " + str(generated_data[d]["values"][i]))
@@ -98,6 +103,7 @@ def send_messages(**kwargs):
             key = d
 
             data = {
+                "id": d,
                 "lat": generated_data[d]["lat"],
                 "lng": generated_data[d]["lng"],
                 "unit": generated_data[d]["unit"],
@@ -110,7 +116,7 @@ def send_messages(**kwargs):
 
             logging.info("payload: {}".format(payload))
             connector.send_data(key, payload)
-
+            logging.info("sleeping for {} seconds".format(delay))
             time.sleep(delay)
 
 
@@ -130,17 +136,17 @@ if __name__ == '__main__':
     """
 
     # define the parameters:
-    """
+
     parser = argparse.ArgumentParser("define the topic")
-    parser.add_argument("--topic", help="define the name of the topic", required=True)
+    parser.add_argument("--topic", help="define the name of the topic", required=True, default="iot.sensor.anomaly_data")
     parser.add_argument("--bootstrapserver", help="hostname or address of the kafka broker", required=True)
     parser.add_argument("--bootstrapserverport", help="port the kafka broker", required=True)
-    parser.add_argument("--schemaregistry", help="hostname or address of the schema registry", required=True)
-    parser.add_argument("--schemaregistryport", help="port for schema registry", required=True)
-    parser.add_argument("--num-messages", help="number of messages -1 for infinite", default=1000, required=True)
+    parser.add_argument("--schema-registry-url", help="url of the schema registry including port", default="http://0.0.0.0:8081", required=True)
+    parser.add_argument("--num-messages", help="number of messages -1 for infinite", default=10000, required=True) # the dash will be replaced by an underscore
+    parser.add_argument("--contamination", help="contamination parameter for the anomaly detection", default=0.1, required=True)
 
     args = parser.parse_args()
-    """
+
     # read config file:
     project_root = str(Path(__file__).parents[6])
     config_path = project_root + "/" + "/src/main/python/resources/config.json"
@@ -161,8 +167,14 @@ if __name__ == '__main__':
             # ToDo: call the fuction with kwargs
             topic = "iot.sensor.anomaly_data"
 
-            data = generate_fake_data(number=1000, sensors=sensors, contamination=0.1, n_features=1, train_only=True, random_state=1)
-            send_messages(number=1000, data=data)
+            # note, that the contamination parameter is set to 0.1, which means that 10% of the data is considered
+            # as anomalies. This is a default value and can be changed in the config file.
+            data = generate_fake_data(number=args.num_messages, sensors=sensors, contamination=args.contamination, n_features=1, train_only=True, random_state=1)
+            send_messages(topic=args.topic,
+                          number=args.num_messages,
+                          data=data,
+                          bootstrap_server=args.bootstrapserver,
+                          bootstrap_server_port=args.bootstrapserverport, schema_registry_url=args.schema_registry_url)
 
     except IOError as error:
         logging.error("Error opening config file {} {}".format(config_path, error))

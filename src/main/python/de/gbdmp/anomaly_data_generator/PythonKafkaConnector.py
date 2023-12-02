@@ -6,7 +6,7 @@ Python Kafka Connector Class:
 
 Maintainer Gerd Jährling mail@gerd-jaehrling.de
 """
-
+import json
 # general imports:
 import sys
 from uuid import uuid4
@@ -31,10 +31,10 @@ config.fileConfig(logging_config)
 
 class PythonKafkaConnector:
     def __init__(self, **kwargs):
-        self.bootstrap_server = kwargs.get("bootstrap_servers", "localhost")
+        self.bootstrap_server = kwargs.get("bootstrap_server", "localhost")
         self.bootstrap_server_port = kwargs.get("bootstrap_server_port", "9092")
-        self.schema_registry_url = kwargs.get("schema_registry_url", "http://localhost:8081")
-        self.topic = kwargs.get("topic", "test")
+        self.schema_registry_url = kwargs.get("schema_registry_url", "http://0.0.0.0:8081")
+        self.topic = kwargs.get("topic", "iot.sensor.anomaly_data")
         self.schema = kwargs.get("schema", None)
 
     def send_data(self, key_value=None, data=None):
@@ -55,7 +55,7 @@ class PythonKafkaConnector:
 
         try:
             logging.debug("connect to the schema registry")
-            schema_registry_conf = {"url": "http://0.0.0.0:8081"}
+            schema_registry_conf = {"url": self.schema_registry_url}
             schema_registry_client = SchemaRegistryClient(schema_registry_conf)
         except Exception as e:
             logging.error("cannot connect to the schema registry {}".format(e))
@@ -68,7 +68,7 @@ class PythonKafkaConnector:
         except SerializationError as se:
             logging.error("serialization not successful {}".format(se))
 
-        conf = {'bootstrap.servers': "localhost:9092",
+        conf = {'bootstrap.servers': self.bootstrap_server + ":" + self.bootstrap_server_port,
                 'client.id': socket.gethostname()}
         producer = Producer(conf)
 
@@ -82,8 +82,8 @@ class PythonKafkaConnector:
                              key=key_value,
                              #key=string_serializer(str(uuid4())),
                              #value=json_serializer(data, SerializationContext(self.topic, MessageField.VALUE)),
-                             value=data,
-                             partition=4,
+                             value=json.dumps(data),
+                             #partition=4,
                              on_delivery=self.delivery_report)
         except KeyboardInterrupt:
             sys.exit(0)
