@@ -100,7 +100,9 @@ def send_messages(**kwargs):
             delay = random.uniform(0, 2)
             #print("key: " + d, " values: " + str(generated_data[d]), " single value: " + str(generated_data[d]["values"][i]))
 
+            key_value = {}
             key = d
+            key_value['id'] = d
 
             data = {
                 "id": d,
@@ -115,7 +117,8 @@ def send_messages(**kwargs):
             payload = json.dumps(data)
 
             logging.info("payload: {}".format(payload))
-            connector.send_data(key, payload)
+            connector.send_data(key_value, data)
+            #connector.send_data(key, data)
             logging.info("sleeping for {} seconds".format(delay))
             time.sleep(delay)
 
@@ -187,4 +190,3 @@ if __name__ == '__main__':
     except Exception as e:
         logging.error("cannot call run method".format(e))
         sys.exit(1)
-

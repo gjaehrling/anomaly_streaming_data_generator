@@ -231,6 +231,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      - ANOMALY_TOPIC=sales.user_data
+      - BOOTSTRAP_SERVER=broker
+      - BOOTSTRAP_SERVER_PORT=29092
+      - SCHEMA_REGISTRY_URL=http://schema-registry:8081
+      - NUM_MESSAGES=100000
+      - CONTAMINATION=0.01
     tty: true
 
 # containers for druid:

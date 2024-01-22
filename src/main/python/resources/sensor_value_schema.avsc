@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "title": "Sensor",
+  "name": "Sensor",
+  "namespace": "com.example",
+  "fields": [
+    {"name": "id", "type": "string", "doc": "Sensor id"},
+    {"name": "lat", "type": "double", "doc": "latitude"},
+    {"name": "lng", "type": "double", "doc": "Longitude"},
+    {"name": "unit", "type": "string", "doc": "Unit of measurement"},
+    {"name": "type", "type": "string", "doc": "Unit type"},
+    {"name": "desc", "type": "string", "doc": "Description of the sensor"},
+    {"name": "value", "type": "double", "doc": "generated sensor value"}
+  ]
+}
+

@@ -6,17 +6,9 @@ Python Kafka Connector Class:
 
 Maintainer Gerd Jährling mail@gerd-jaehrling.de
 """
-import json
-# general imports:
-import sys
-from uuid import uuid4
 
-# kafka import:
-from confluent_kafka import Producer
-import socket
-from confluent_kafka.serialization import StringSerializer, SerializationContext, MessageField, SerializationError
-from confluent_kafka.schema_registry import SchemaRegistryClient
-from confluent_kafka.schema_registry.json_schema import JSONSerializer
+from confluent_kafka import avro
+from confluent_kafka.avro import AvroProducer
 
 # import and configuration for logging
 from pathlib import Path
@@ -46,66 +38,51 @@ class PythonKafkaConnector:
         """
 
         try:
-            schema_file_path = project_root + "/src/main/python/resources/schema.json"
+            logging.info("read the value schema from file")
+            value_schema_file_path = project_root + "/src/main/python/resources/sensor_value_schema.avsc"
             # Read the contents of the schema file
-            with open(schema_file_path, "r") as file:
-                schema_contents = file.read()
+            with open(value_schema_file_path, "r") as file:
+                value_schema_contents = file.read()
         except FileNotFoundError:
             logging.error("could not find or read file with the JSON schema!")
 
         try:
-            logging.debug("connect to the schema registry")
-            schema_registry_conf = {"url": self.schema_registry_url}
-            schema_registry_client = SchemaRegistryClient(schema_registry_conf)
+            logging.info("read the key schema from file")
+            value_schema_file_path = project_root + "/src/main/python/resources/sensor_key_schema.avsc"
+            # Read the contents of the schema file
+            with open(value_schema_file_path, "r") as file:
+                key_schema_contents = file.read()
+        except FileNotFoundError:
+            logging.error("could not find or read file with the JSON schema!")
+
+        try:
+            logging.info("load the key schema into the schema registry")
+            key_avro_schema = avro.loads(key_schema_contents)
+            logging.info("load the value chema into the schema registry")
+            value_avro_schema = avro.loads(value_schema_contents)
         except Exception as e:
-            logging.error("cannot connect to the schema registry {}".format(e))
-            sys.exit(1)
+            logging.error("could not load the schema into the schema registry: {}".format(e))
 
-        try:
-            logging.debug("using string serialiser and JSON serialiser to serialise the message")
-            string_serializer = StringSerializer('utf_8')
-            json_serializer = JSONSerializer(str(schema_contents), schema_registry_client, self.data_to_dict)
-        except SerializationError as se:
-            logging.error("serialization not successful {}".format(se))
+        # Create AvroProducer configuration:
+        # for local testing parameters needs to be set to:
+        #    'bootstrap.servers': 'localhost:9092',
+        #    'schema.registry.url': 'http://0.0.0.0:8081'
 
-        conf = {'bootstrap.servers': self.bootstrap_server + ":" + self.bootstrap_server_port,
-                'client.id': socket.gethostname()}
-        producer = Producer(conf)
+        conf = {
+            'bootstrap.servers': self.bootstrap_server + ":" + self.bootstrap_server_port,
+            'schema.registry.url': self.schema_registry_url
+        }
 
-        logging.info("Producing user records to topic {}. ^C to exit.".format(self.topic))
-        # Serve on_delivery callbacks from previous calls to produce()
-        producer.poll(0.0)
+        # Create AvroProducer instance
+        avro_producer = AvroProducer(conf,
+                                     default_key_schema=key_avro_schema,
+                                     default_value_schema=value_avro_schema)
 
-        try:
-            #producer.produce(topic=self.topic, key="key", value="value")
-            producer.produce(topic=self.topic,
-                             key=key_value,
-                             #key=string_serializer(str(uuid4())),
-                             #value=json_serializer(data, SerializationContext(self.topic, MessageField.VALUE)),
-                             value=json.dumps(data),
-                             #partition=4,
-                             on_delivery=self.delivery_report)
-        except KeyboardInterrupt:
-            sys.exit(0)
+        # Produce Avro-serialized message to Kafka topic
+        avro_producer.produce(topic=self.topic, value=data, key=key_value)
 
-        logging.info("\nFlushing records...")
-        producer.flush()
-
-
-    def data_to_dict(self, data, ctx):
-        """
-        Returns a dict representation of the data for serialization.
-        Args:
-            data: data instance.
-            ctx (SerializationContext): Metadata pertaining to the serialization
-                operation.
-        Returns:
-            dict: Dict populated with user attributes to be serialized.
-        """
-
-        # User._address must
-        # not be serialized; omit from dict
-        return data
+        # Ensure the message is sent to Kafka
+        avro_producer.flush()
 
     def delivery_report(self, err, msg):
         """
@@ -120,7 +97,6 @@ class PythonKafkaConnector:
             return
         logging.info('User record {} successfully produced to {} [{}] at offset {}'.format(
             msg.key(), msg.topic(), msg.partition(), msg.offset()))
-
 
 
 
