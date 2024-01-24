@@ -22,6 +22,14 @@ Showing inliers and outliers.
 * to start the containers run docker-compose up -d
 * Confluent Control Center under http://localhost:9021/clusters
 * Jupyter Notebook under http://localhost:8888/lab
+* submitting a Flink job using python: 
+* https://nightlies.apache.org/flink/flink-docs-release-1.18/docs/deployment/cli/#submitting-pyflink-jobs
+
+run a flink job using python:
+```
+ ../bin/flink run --python StreamingAnomalyDetection.py
+```
+
 
 ### Contribution guidelines ###
 

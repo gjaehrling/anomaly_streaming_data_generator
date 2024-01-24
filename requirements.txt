@@ -10,3 +10,4 @@ sseclient
 setdefaultencoding
 fastavro
 avro
+pyflink
